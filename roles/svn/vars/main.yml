@@ -1,0 +1,9 @@
+---
+# vars file for svn
+svn_apache_user: apache
+svn_apache_conf_path: /etc/httpd/conf.d
+svn_packages:
+  - httpd
+  - mod_dav_svn
+  - subversion
+  - python-passlib

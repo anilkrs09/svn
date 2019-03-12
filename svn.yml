@@ -1,0 +1,6 @@
+---
+  - name: app server playbook
+    hosts: all
+    become: true
+    roles:
+      - svn

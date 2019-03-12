@@ -1,0 +1,9 @@
+---
+# defaults file for svn
+svnrepo: hms
+svn_repo_path: /var/svn
+svn_repo_created: true
+users:
+ anil: hello
+ aditya: aditya
+ babita: babita

@@ -1,0 +1,5 @@
+---
+  - name: start apache_server
+    service: 
+      name: httpd
+      state: started

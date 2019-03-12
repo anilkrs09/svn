@@ -1,0 +1,12 @@
+LoadModule dav_svn_module     modules/mod_dav_svn.so
+LoadModule authz_svn_module modules/mod_authz_svn.so
+
+<Location /{{ svnrepo }}>
+DAV svn
+SVNPath {{ svn_repo_path }}/{{svnrepo}}
+Authtype Basic
+AuthName "JKT SVN Repository"
+AuthzSVNAccessFile {{ svn_repo_path }}/{{svnrepo}}/conf/authz
+AuthUserFile {{ svn_repo_path }}/{{ svnrepo }}/conf/passwdd
+Require valid-user
+</Location>

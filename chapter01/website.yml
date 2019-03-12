@@ -1,0 +1,28 @@
+---
+  - name: installing website
+    hosts: all
+    become: true
+    tasks:
+      - name: conigure yum repository
+        yum_repository:
+          name: nginix_repo
+          description: ngnix repository
+          file: config_ngnix
+          baseurl: https://nginx.org/packages/centos/7/x86_64/
+          gpgcheck: no
+
+      - name: git installation 
+        package:
+          name: git
+          state: present
+
+      - name: ngnix pkg installation
+        package:
+          name: nginx
+          state: present
+
+      - name: repository creation
+        git:
+          repo: https://github.com/schoolofdevops/html-sample-app.git 
+          dest: /usr/share/nginx/html/app
+ 

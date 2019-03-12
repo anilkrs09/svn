@@ -1,0 +1,76 @@
+---
+- name: Load a variable file based on the OS type, or a default if not found. Using free-form to specify the file.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yaml"
+    - "{{ ansible_os_family }}.yaml"
+    - main.yml
+
+- name: SVN packages installation
+  package:
+    name: "{{ svn_packages }}"
+    state: present
+
+- name: Ensure svn home folder exists
+  file:
+    path: "{{ svn_repo_path }}"
+    state: directory
+
+- name: copy subversion cofig file
+  template:
+    src: subversion.conf.j2
+    dest: "{{ svn_apache_conf_path }}/subversion.conf"
+    owner: root
+    group: root
+  notify: load_apache  
+
+- name: create a repository
+  command: >
+    svnadmin create {{ svnrepo }}
+    chdir={{ svn_repo_path }}
+    creates={{ svn_repo_path }}/{{ svnrepo }}/README.txt
+
+- name: Change repo permission
+  file:
+    path: "{{ svn_repo_path }}"
+    owner: "{{ svn_apache_user }}"
+    group: "{{ svn_apache_user }}"
+    recurse: true
+
+- name: password for user
+  htpasswd:
+    path: "{{ svn_repo_path }}/{{ svnrepo }}/conf/passwdd"
+    name: "{{ item.key }}"
+    password: "{{ item.value }}"
+    crypt_scheme: md5_crypt
+  with_dict: "{{users}}"  
+
+- name: Assigning repo privileges to users
+  template:
+    src: authz.j2
+    dest: "{{svn_repo_path }}/{{ svnrepo }}/conf/authz"  
+
+- name: selinux file context mapping
+  sefcontext:
+    target: "{{svn_repo_path }}/{{ svnrepo }}(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+
+- name: seliux setseboolean
+  seboolean: 
+    name: httpd_unified
+    state: yes
+    persistent: yes
+
+- name: Updating authz
+  replace:
+    path: "{{svn_repo_path }}/{{ svnrepo }}/conf/svnserve.conf"
+    regexp: '# auth-access = write'
+    replace: 'auth-access = write'
+
+- name: Updating authz
+  replace:
+    path: "{{svn_repo_path }}/{{ svnrepo }}/conf/svnserve.conf"
+    regexp: '# authz-db = authz'
+    replace: 'authz-db = authz'
+  notify: load_apache  

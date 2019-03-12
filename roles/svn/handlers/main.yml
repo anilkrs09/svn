@@ -1,0 +1,6 @@
+---
+# handlers file for svn
+- name: load_apache
+  service:
+    name: httpd
+    state: restarted
