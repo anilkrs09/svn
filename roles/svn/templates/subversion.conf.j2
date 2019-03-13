@@ -5,7 +5,7 @@ LoadModule authz_svn_module modules/mod_authz_svn.so
 DAV svn
 SVNPath {{ svn_repo_path }}/{{svnrepo}}
 Authtype Basic
-AuthName "JKT SVN Repository"
+AuthName "SVN Repository"
 AuthzSVNAccessFile {{ svn_repo_path }}/{{svnrepo}}/conf/authz
 AuthUserFile {{ svn_repo_path }}/{{ svnrepo }}/conf/passwdd
 Require valid-user
